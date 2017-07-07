@@ -47,8 +47,8 @@ trend <- FLModelSim(model=~b, params=FLPar(b=0.5), vcov=matrix(0.02))
 m4 <- a4aM(shape=shape, level=level, trend=trend)
 m4 <- mvrnorm(nits, m4)
 
-range(m4)[] <- range(ple4)[]
-range(m4)[c("minmbar","maxmbar")]<-c(1,1)
+range(m4,c("minmbar","maxmbar"))<-c(1,1)
+range(m4,c(1:5)) <- range(ple4,c(1:5))
 
 flq <- m(m4)[]
 
@@ -123,7 +123,7 @@ save(om, file='omRUN.RData')
 
 # RESULTS
 
-# Stock trajectory
+# Stock trajectory ##### doesn't work... it misses rp
 plot(om, rp['msy']) + geom_vline(aes(xintercept=2008), colour="red", linetype=2)
 
 # Performance
