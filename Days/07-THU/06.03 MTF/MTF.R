@@ -526,6 +526,7 @@ fbar_scenarios[5,1:7,] <- sweep(sapply((f01 - fbar_sq) / (2015 - 2009), function
 fbar_scenarios[6,,] <- sweep(sapply((f01 - fbar_sq) / (2020 - 2009), function(x) x * (0:11)), 2, c(fbar_sq), "+") # decrease to F01 by 2020
       
 # Have a quick look
+library(reshape)
 test <- melt(fbar_scenarios)
 test$scenario <- factor(test$scenario)
 ggplot(test, aes(x=year, y=value)) + geom_line(aes(group=iter)) + facet_wrap(~scenario)
@@ -590,7 +591,8 @@ plot(mtf_results[[4]])
 # Generate summaries of these results: SSB, Fbar, Rec and Catch
 # Pull out the median and some other quantile levels (here the 10% and 90%)
 quantile_levels <- c(0.1,0.5,0.9)
-
+library(plyr)
+#### There is a problem with the code from here on but I can't fix it
 summary_table <- ldply(mtf_results, function(x){
     ssbs <- ssb(x)
     ssb_ql <- apply(ssbs,1:5,quantile, probs=quantile_levels)
