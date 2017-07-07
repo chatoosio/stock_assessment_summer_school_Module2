@@ -107,7 +107,7 @@ ctrl_f
 # We see that we have what looks like our ctrl_target, but now it has two more columns (min and max)
 # Also there is another table underneath - ignore this for now
 
-# Importante!
+# Important!
 # Remember that we can only really control F
 # The year in the fwdControl object is the year that F will be set to hit your target 
 # This is true for all target types - this will become clear later
@@ -153,7 +153,7 @@ ple4_fwd_catch <- fwd(ple4_stf, ctrl_catch, sr = ple4_sr)
 catch(ple4_fwd_catch)
 plot(window(ple4_fwd_catch, start = 1991, end = 2011))
 
-# Importante
+# Important
 # What fwd() really does is to find the value of F that will result in hitting the target
 
 #---------------------------------------------------------------
@@ -189,7 +189,7 @@ catch(ple4_fwd_ssb)
 # We've hit our SSB target straight away
 plot(window(ple4_fwd_ssb, start = 1991, end = 2011))
 
-# Importante!
+# Important!
 # Remember that the F in the final year was already set by the stf()
 # This means that F in 2011 is just left over from stf() and has nothing to do with our projection
 # And because our target is SSB in 2011, catch is not calculated for 2011
@@ -462,7 +462,7 @@ catch(ple4_fwd_catch_iters)
 plot(window(ple4_fwd_catch_iters, start = 1991, end = 2011))
 rec(ple4_fwd_catch_iters)
 
-# A projection with stochastic catch and recruiment!
+# A projection with stochastic catch and recruitment!
 
 #---------------------------------------------------------------
 # Recipe 9 - Just a massive cake
