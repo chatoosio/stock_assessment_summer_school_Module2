@@ -107,7 +107,7 @@ range(m2)
 # It's 0 to 0, so the mbar range is just age 0
 # The value of m over the mbar range is given by the level model - hence 0.6 at 0.6
 # change it to the whole age range
-rngmbar(m2) <- c(0,5)
+range(m2, c('minmbar', 'maxmbar')) <- c(0, 5)
 range(m2)
 m(m2)
 # Take the mean over the mbar range
