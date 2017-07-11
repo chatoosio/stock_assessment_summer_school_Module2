@@ -156,8 +156,7 @@ fit4 <- sca(ple4, ple4.indices[1], fmodel, qmodel, srmodel)
 srmodel <- ~ geomean(CV=0.05)
 fit5 <- sca(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
 
-flqs <- FLQuants(fac=stock.n(fit)[1], bh=stock.n(fit4)[1])
-flqs <- FLQuants(bh=stock.n(fit4)[1])
+flqs <- FLQuants(fac=stock.n(fit)[1], bh=stock.n(fit3)[1], ric=stock.n(fit2)[1])
 
 xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment models", auto.key=list(points=FALSE, lines=TRUE, columns=3))
 
@@ -251,7 +250,7 @@ xyplot(data~year|age, groups=qname, data=flqs, type="l", main="Likelihood weight
 # Assessing ADMB files
 #--------------------------------------------------------------------
 
-fit1 <- a4aSCA(stk, idx, fmodel, qmodel, srmodel, n1model, vmodel=list(~1, ~1), wkdir="mytest") 
+fit1 <- a4aSCA(stk, idx, fmodel, qmodel, srmodel, n1model, vmodel=list(~1, ~1)) # add wkdir="mytest" if you have a folder called "mytest" in your WD and you want all admb files saved there
 
 #--------------------------------------------------------------------
 # More models
@@ -345,7 +344,7 @@ f2 <- sca(ple4, ple4.indices, fmodel=~ factor(age) + s(year, k=20), qmodel=list(
  
 stock.sim <- weightedModelAverage(list(f1, f2), ple4, AIC, nsim = 1000)
 
-stks <- FLStocks(f1=ple4+f1, f2=ple4+f2, ma=ple4+stock.sim)
+stks <- FLStocks(f1=ple4+f1, f2=ple4+f2, ma=stock.sim)
 flqs <- lapply(stks, ssb)
 flqs <- lapply(flqs, iterMedians)
 xyplot(data~year, groups=qname, data=flqs, type="l")
@@ -362,8 +361,8 @@ level4 <- FLModelSim(model=~k^0.66*t^0.57, params = FLPar(k=0.4, t=10), vcov=mat
 trend4 <- FLModelSim(model=~b, params=FLPar(b=0.5), vcov=matrix(0.02))
 m4 <- a4aM(shape=shape2, level=level4, trend=trend4)
 #m4 <- mvrnorm(25, m4)
-range(m4)[] <- range(ple4)[]
-range(m4)[c("minmbar","maxmbar")]<-c(1,1)
+range(m4,c("minmbar","maxmbar"))<-c(1,1)
+range(m4,c(1:5)) <- range(ple4,c(1:5))
 flq <- m(m4)[]
 quant(flq) <- "age"
 stk <- ple4
@@ -373,7 +372,7 @@ f3 <- sca(stk, ple4.indices, fmodel=~ factor(age) + s(year, k=20), qmodel=list(~
           
 stock.sim <- weightedModelAverage(list(f1, f3), ple4, AIC, nsim = 1000)
 
-stks <- FLStocks(f1=ple4+f1, f2=ple4+f3, ma=ple4+stock.sim)
+stks <- FLStocks(f1=ple4+f1, f2=ple4+f3, ma=stock.sim)
 flqs <- lapply(stks, ssb)
 flqs <- lapply(flqs, iterMedians)
 xyplot(data~year, groups=qname, data=flqs, type="l")
@@ -394,8 +393,8 @@ level4 <- FLModelSim(model=~k^0.66*t^0.57, params = FLPar(k=0.4, t=10), vcov=mat
 trend4 <- FLModelSim(model=~b, params=FLPar(b=0.5), vcov=matrix(0.02))
 m4 <- a4aM(shape=shape2, level=level4, trend=trend4)
 m4 <- mvrnorm(nits, m4)
-range(m4)[] <- range(ple4)[]
-range(m4)[c("minmbar","maxmbar")]<-c(1,1)
+range(m4,c("minmbar","maxmbar"))<-c(1,1)
+range(m4,c(1:5)) <- range(ple4,c(1:5))
 flq <- m(m4)[]
 quant(flq) <- "age"
 stk <- propagate(ple4, nits)

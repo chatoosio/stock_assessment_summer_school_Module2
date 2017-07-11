@@ -56,7 +56,7 @@ sum(flq > 0)
 
 # PROGRAMMING
 
-# Let's try programmoing a very simple population model
+# Let's try programming a very simple population model
 
 # First, an FLQuant for pop(ulation), age=1:6, year=1:20
 

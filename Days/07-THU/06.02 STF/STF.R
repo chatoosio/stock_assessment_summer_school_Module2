@@ -241,13 +241,15 @@ fbar_scenarios <- cbind(rep(fbar_status_quo,length(fbar_multiplier)),
 # We can calculate this using FLBRP (or maybe you already have a value)
 library(FLBRP)
 f01 <- c(refpts(brp(FLBRP(ple4)))["f0.1","harvest"])
+
+
+# Add the F0.1 scenario as a final scenario
+fbar_scenarios <- rbind(fbar_scenarios, c(fbar_status_quo,f01,f01))
+
 # Add some names
 colnames(fbar_scenarios) <- c("2009","2010","2011")
 rownames(fbar_scenarios) <- c(fbar_multiplier, "f01")
 fbar_scenarios
-
-# Add the F0.1 scenario as a final scenario
-fbar_scenarios <- rbind(fbar_scenarios, c(fbar_status_quo,f01,f01))
 
 # There are various results we want to extract from the STF
 # Like predicted Catch, SSB and the relative change in these

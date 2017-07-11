@@ -295,7 +295,7 @@ xyplot(data~year|age, groups=qname, data=flqs, type="l", main="Likelihood weight
 # Assessing ADMB files
 #--------------------------------------------------------------------
 
-fit1 <- a4aSCA(stk, idx, fmodel, qmodel, srmodel, n1model, vmodel=list(~1, ~1), wkdir="mytest") 
+fit1 <- a4aSCA(stk, idx, fmodel, qmodel, srmodel, n1model, vmodel=list(~1, ~1)) # add wkdir="mytest" if you have a folder called "mytest" in your WD and you want all admb files saved there
 
 #--------------------------------------------------------------------
 # More models
