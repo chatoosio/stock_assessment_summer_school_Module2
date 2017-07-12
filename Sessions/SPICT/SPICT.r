@@ -39,13 +39,23 @@ ane6$obsI[[1]] <- ane$index
 #ane6$obsI[[3]] <- Index 3
 #ane6$obsI[[4]] <- Index 4
 
-jpeg(file = "ane6#1.jpg", bg = "white",  width = 880, height = 880,units = "px", pointsize = 25,      quality = 100)
-plotspict.data(ane6)
-dev.off()
+# Inspect the file
+ane6
+
+# Plot file
 
 x11()
 
+plotspict.data(ane6)
+
+plotspict.ci(ane6)
+
+# Fit base model
 ane6fit <- fit.spict(ane6)
+
+# Explore results
+capture.output(summary(ane6fit))
+
 
 
 # Priors
