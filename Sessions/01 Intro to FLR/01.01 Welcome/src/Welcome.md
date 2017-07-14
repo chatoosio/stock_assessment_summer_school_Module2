@@ -1,3 +1,9 @@
+---
+output:
+  pdf_document: 
+    latex_engine: xelatex
+  html_document: default
+---
 % FLR and a4a for Quantitative Fisheries Science
 % FLR Team
 % August 2014
