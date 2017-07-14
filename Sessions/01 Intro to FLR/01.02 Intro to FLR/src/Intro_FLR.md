@@ -1,3 +1,9 @@
+---
+output:
+  pdf_document: 
+    keep_tex: yes
+  html_document: default
+---
 % The FLR platform and the a4a initiative
 % FLR Team
 % August 2014
