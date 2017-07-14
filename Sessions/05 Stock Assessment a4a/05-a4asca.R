@@ -33,13 +33,21 @@ keylst <- list(points=FALSE, lines=TRUE, space="right")
 #====================================================================
 # Quick and dirty
 #====================================================================
-
 # rename the stocks
 hke <- HKE_09_10_11_EWG15_11
 hke.idx <- flq.idx 
 
+# Adjust Fbar range
+
+units(harvest(hke))<-"f"
+range(hke)["minfbar"] <- 0   
+range(hke)["maxfbar"] <- 3
+
+
+
+
 # fitting
-fit <- sca(hke, hke.idx)
+fit <- sca(hke, hke.idx[1])
 
 # diagnostics
 res <- residuals(fit, hke, hke.idx)
@@ -60,62 +68,66 @@ wireframe(data ~ age + year, data = as.data.frame(stock.n(stk)), drape = TRUE, m
 # C 3D
 wireframe(data ~ age + year, data = as.data.frame(catch.n(stk)), drape = TRUE, main="Catches")
 
-#====================================================================
-# Data structures
-#====================================================================
 
-showClass("a4aFit")
 
-plotS4("a4aFit", main="a4aFit class", lwd = 1, box.lwd = 2, cex.txt = 0.8, box.size = 0.1, box.type = "square", box.prop = 0.3)
+# Explore how well the model is predicitng the catches
 
-showClass("a4aFitSA")
+plot(fit, hke)
 
-plotS4("a4aFitSA", main="a4aFitSA class", lwd = 1, box.lwd = 2, cex.txt = 0.8, box.size = 0.1, box.type = "square", box.prop = 0.3)
+# Explore how well the model is predicitng survey abundances
 
-showClass("SCAPars")
-showClass("a4aStkParams")
-showClass("submodel")
 
-plotS4("SCAPars", main="SCAPars class", lwd = 1, box.lwd = 2, cex.txt = 0.8, box.size = 0.1, box.type = "square", box.prop = 0.3)
+plot(fit, hke.idx)
 
-plotS4("a4aStkParams", main="a4aStkParams class", lwd = 1, box.lwd = 2, cex.txt = 0.8, box.size = 0.1, box.type = "square", box.prop = 0.3)
+# Individual indexes can be called with
+# Explore how well the model is predicitng the catches
 
-plotS4("submodel", main="submodel class", lwd = 1, box.lwd = 2, cex.txt = 0.8, box.size = 0.1, box.type = "square", box.prop = 0.3)
+plot(fit, hke.idx[1])
+
 
 #====================================================================
 # The sca method - statistical catch-at-age
 #====================================================================
 
+# submodels
+    #	fmodel
+    #	qmodel
+    #	srmodel
+    #	vmodel
+    #	n1model
+
 #--------------------------------------------------------------------
 # fishing mortality submodel
 #--------------------------------------------------------------------
 
-# fix qmodel
-qmodel <- list(~ factor(age)) 
+# fix catchability model (qmodel)
+# The qmodel is a list where a catchability model needs to be set up for each index, hence here we have 3 Medits and one commercial CPUE.
+qmodel <- list(~ factor(age), ~ factor(age), ~ factor(age), ~ factor(age)) 
 
 # separable Fay = Fa * Fy
 fmodel <- ~ factor(age) + factor(year)
-fit <- sca(stock = hke, indices = hke.idx[1], fmodel=fmodel, qmodel=qmodel)
+fit <- sca(stock = hke, indices = hke.idx, fmodel=fmodel, qmodel=qmodel)
+
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit)), drape = TRUE, screen = list(x = -90, y=-45))
 
 # smooth separable Fay = smooth Fa * smooth Fy
 fmodel <- ~ s(age, k=4) + s(year, k = 5)
-fit1 <- sca(hke, hke.idx[1], fmodel, qmodel)
+fit1 <- sca(hke, hke.idx, fmodel, qmodel)
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit1)), drape = TRUE, screen = list(x = -90, y=-45))
 
 # interaction Fa * Fy
-fmodel <- ~ te(age, year, k = c(4,5))
+fmodel <- ~ te(age, year, k = c(3,5))
 fit2 <- sca(hke, hke.idx[1], fmodel, qmodel)
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit2)), drape = TRUE, screen = list(x = -90, y=-45))
 
 # smooth separable + interaction Fa,Fy
 fmodel <- ~ s(age, k=4) + s(year, k = 5) + te(age, year, k = c(3,3))
-fit3 <- sca(hke, hke.idx[1], fmodel, qmodel)
+fit3 <- sca(hke, hke.idx, fmodel, qmodel)
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit3)), drape = TRUE, screen = list(x = -90, y=-45))
 
 # interaction Fa * Fy + recruitment F extra smooth
 fmodel <- ~ te(age, year, k = c(4,5)) + s(year, k = 5, by = as.numeric(age==1))
-fit4 <- sca(hke, hke.idx[1], fmodel, qmodel)
+fit4 <- sca(hke, hke.idx, fmodel, qmodel)
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit4)), drape = TRUE, screen = list(x = -90, y=-45))
 
 #--------------------------------------------------------------------
