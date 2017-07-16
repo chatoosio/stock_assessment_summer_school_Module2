@@ -51,8 +51,12 @@ library(FLCore)
 FLQuant()
 
 # Let's look at a toy example
+# rnorm 
+# dim is n ages and n years
 flq <- FLQuant(rnorm(40), dim=c(4,10), dimnames=list(age=1:4, year=1990:1999))
 
+# what if we get the dims wrong?
+FLQuant(rnorm(40), dim=c(4,9), dimnames=list(age=1:4, year=1990:1999))
 
 # Inspect them with SUMMARY methods
 
