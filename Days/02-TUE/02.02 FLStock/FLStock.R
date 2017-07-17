@@ -22,6 +22,10 @@ class(hke)
 
 slotNames(hke)
 
+# look at the structure
+str(hke)
+
+#let's plot it'
 plot(hke)
 
 name(hke)
