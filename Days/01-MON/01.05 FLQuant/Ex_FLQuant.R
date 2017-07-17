@@ -13,40 +13,24 @@ library(FLCore)
 # (1) Create an FLQuant object with elements numbered sequentially (i.e. 1 to N)
 # and with ages from 1 to 6, years from 2003 to 2012 and four seasons
 
-flq <- FLQuant(1:240, dim=c(6,10,1,4,1,1),
-	dimnames=list(age=1:6, year=2003:2012, season=1:4))
-
 # (2) Create an FLQuant with dimensions 6,10,1,1,1,100 and lognormally-distributed
 # random nunmbers
-
-flq <- FLQuant(rlnorm(6000), dimnames=list(age=1:6, year=2003:2012, iter=1:100))
 
 # SUBSET
 
 # (3) Extract from flq the values for the first three years
 
-fle3 <- flq[,1:3]
-
-fle3 <- flq[,as.character(2003:2005)]
 
 # (4) Select from flq leaving out the sixth age
 
-fle4 <- flq[-6,]
-
 # (5) What if do not know the precise age names?
 
-fle5 <- flq[-dims(flq)$max, ]
 
 # APPLY
 
-# Calculate the proportion-at-age per year
+# (6) Calculate the proportion-at-age per year
 
-# COMPUTE
-
-flq <- FLQuant(rnorm(200), dimnames=list(age=1:5, year=2000:2013, area=c("N","S","C")))
-
-
-# How many values in flq are greater than 0?
+# (7) How many values in flq are greater than 0?
 
 flq > 0
 
