@@ -13,10 +13,8 @@ library(FLCore)
 # (1) Create an FLQuant object with elements numbered sequentially (i.e. 1 to N)
 # and with ages from 1 to 6, years from 2003 to 2012 and four seasons
 
-
 # (2) Create an FLQuant with dimensions 6,10,1,1,1,100 and lognormally-distributed
 # random nunmbers
-
 
 # SUBSET
 

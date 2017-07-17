@@ -164,7 +164,13 @@ catch.n.flq <- FLQuant(catch.n.matrix, dimnames=list(age=0:6, year = 2006:2014))
 # trawl survey relative abundance index or a commercial CPUE.
 
 # Load an FLIndex
-
+# take the Tuning index from MEDITS
 catch.n_idx <- read.csv("hke_9_10_11_idx.csv",header = TRUE, row.names = 1)
 catch.n_idx.matrix <- as.matrix(catch.n_idx[1:6, -2])
-FLIndex(catch.n = FLQuant(catch.n.matrix, dimnames=list(age=0:5, year = 2006:2014)))
+
+hke.idx <- FLQuant(catch.n_idx.matrix, dimnames=list(age=1:6, year = 2006:2014))
+hke.idx <- FLIndex(catch.n = hke.idx)
+hke.idx <- FLIndices(hke.idx)
+
+# plot the only filled slot, catch.n
+plot(catch.n(hke.idx[[1]]))
