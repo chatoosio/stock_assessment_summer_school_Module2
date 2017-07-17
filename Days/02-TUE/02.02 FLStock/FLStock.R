@@ -10,116 +10,125 @@
 
 library(FLCore)
 
-data(ple4)
+#data(hke)
+load("~/GitHub/stock_assessment_summer_school_Module2/Material/stocks_for_course/HKE9_11_at_Age/HKE_09_10_11_EWG15_11.RData")
+
+hke <- HKE_09_10_11_EWG15_11
+
 
 help("FLStock-class")
 
-class(ple4)
+class(hke)
 
-slotNames(ple4)
+slotNames(hke)
 
-plot(ple4)
+plot(hke)
 
-name(ple4)
-desc(ple4)
-range(ple4)
+name(hke)
+desc(hke)
+range(hke)
 
 # catch =~ landings + discards
-landings(ple4) + discards(ple4)
+landings(hke) + discards(hke)
 
-catch(ple4)
+catch(hke)
 
-catch(ple4) <- landings(ple4) + discards(ple4)
+catch(hke) <- landings(hke) + discards(hke)
 
 # data & results
 
 # *, *.n & *.wt
-catch.n(ple4)
+catch.n(hke)
 
-quantSums(catch.n(ple4)[,"2001",,,,] * catch.wt(ple4)[,"2001",,,,])
+quantSums(catch.n(hke)[,"2006",,,,] * catch.wt(hke)[,"2006",,,,])
 
-catch(ple4)[,"2001",,,,]
+catch(hke)[,"2006",,,,]
 
 # m, m.spwn
-m(ple4) # natural mortality
+m(hke) # natural mortality
 
-m.spwn(ple4) # fraction of the natural mortality ocurring before spawning
+m.spwn(hke) # fraction of the natural mortality ocurring before spawning
 
 # harvest, harvest.spwn
-harvest(ple4)
-harvest.spwn(ple4)
+harvest(hke)
+harvest.spwn(hke)
 
 # stock
-stock(ple4)
-stock.n(ple4)
+stock(hke)
+stock.n(hke)
 
+# in this case the size of the at sea population was not compute, so we use the method:
+computeStock(hke)
+
+stock(hke) <- computeStock(hke)
 
 # Methods
-# ple4
+# hke
 
 # Methods: computing discards, landings and catch
-discards(ple4) <- computeDiscards(ple4)
+discards(hke) <- computeDiscards(hke)
 
 # summary & plot
-summary(ple4)
+summary(hke)
 
-plot(ple4)
+plot(hke)
 
 # transform
 
 # window, [, qapply
 # Check year range # window()
 
-range(ple4)
-smallple4 <- window(ple4, start = 1979, end = 2001)
+range(hke)
+smallhke <- window(hke, start = 2008, end = 2013)
 
 # Check new year range
-range(smallple4)
-plot(smallple4)
+range(smallhke)
+#plot(smallhke)
 
 # SUBSET
-temp <- ple4[,c("1998", "1999", "2000", "2001")]
+temp <- hke[,c("2008", "2009", "2010", "2011")]
 # or
-temp <- ple4[,as.character(1998:2001)]
+temp <- hke[,as.character(2008:2011)]
 
 # many FLQuant methods also available at this level
-summary(propagate(ple4, 10))
+summary(propagate(hke, 10))
 
-summary(ple4[,'1990'])
+summary(hke[,'2010'])
 
-summary(trim(ple4, year=1990:1999))
+summary(trim(hke, year=1990:1999))
 
-summary(expand(ple4, year=1957:2057))
+summary(expand(hke, year=1957:2057))
 
 
 # replace using logical values
-catch(ple4)[[20]]<-99
-plot(catch(ple4))
-catch(ple4)[catch(ple4)==99] <- 100000
-plot(catch(ple4))
+catch(hke)[[6]]<-99
+plot(catch(hke))
+catch(hke)[catch(hke)==99] <- 5000
+plot(catch(hke))
 
 # summary of a FLStock
-summary(ple4)
+summary(hke)
 
 # plot and FLStock
 # the default
-plot(ple4)
+plot(hke)
 
 # or individual parts
-plot(stock(ple4))
-plot(stock(ple4))
-plot(landings(ple4))
+plot(stock(hke))
+plot(stock.n(hke))
+plot(landings(hke))
 
 # Methods for usual computations
 
 #METHODS rec = stock.n[rec.age=first.age,]
-rec(ple4)
+rec(hke)
 
 #METHODS Calculate Spawning Stock Biomass (SSB)
 # SSB = stock.n * exp(-F * F.spwn - M * M.spwn) * stock.wt * mat
-ssb(ple4)
 
-object<-ple4
+ssb(hke)
+
+object<-hke
 colSums(object@stock.n * exp(-object@harvest *
 	object@harvest.spwn - object@m * object@m.spwn) *
 	object@stock.wt * object@mat, na.rm = FALSE)
@@ -127,33 +136,33 @@ colSums(object@stock.n * exp(-object@harvest *
 getMethod("ssb", "FLStock")
 
 #METHODS Fbar = mean(F between fbar ages)
-fbar(ple4)
+fbar(hke)
 getMethod("fbar", "FLStock")
 
 #METHODS fapex = max F per year
-fapex(ple4)
+fapex(hke)
 
 #METHODS ssbpurec = SSB per unit recruit
-ssbpurec(ple4)
+ssbpurec(hke)
 
 #METHODS r = stock reproductive potential
-r(ple4)
+r(hke)
 
 #METHODS survprob = survival probabilities by year or cohort
-survprob(ple4)
-survprob(ple4, by ='cohort')
-plot(survprob(ple4))
+survprob(hke)
+survprob(hke, by ='cohort')
+plot(survprob(hke))
 
 #METHODS coercion
 # as.FLSR
-ple4SR<-as.FLSR(ple4)
+ple4SR<-as.FLSR(hke)
 summary(ple4SR)
 
 # METHODS convert to data frame
 # entire FlStock
-temp<-as.data.frame(ple4)
+temp<-as.data.frame(hke)
 summary(temp)
 
 # or only some slots
-as.data.frame(FLQuants(catch.n=catch.n(ple4), stock.n=stock.n(ple4)))
+as.data.frame(FLQuants(catch.n=catch.n(hke), stock.n=stock.n(hke)))
 

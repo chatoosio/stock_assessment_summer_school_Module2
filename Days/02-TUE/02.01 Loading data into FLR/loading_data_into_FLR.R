@@ -124,7 +124,7 @@ her <- setPlusGroup(her,plusgroup=7)
 # Note that we have row and column names (ages and years)
 
 # Read this in using read.table() with default options
-catch.n <- read.table("data/catch_numbers.csv")
+catch.n <- read.table("catch_numbers.csv")
 catch.n
 # Looks terrible
 # what just happened?
@@ -137,24 +137,34 @@ catch.n <- read.table("data/catch_numbers.csv", header=TRUE, sep=',')
 catch.n <- read.table("data/catch_numbers.csv", header=TRUE, sep=',', row.names=1)
 # The column names are ugly (with the Xs) but that is OK for now
 # Can use read.csv() instead - same as read.table() but different default options
-catch.n <- read.csv("data/catch_numbers.csv",row=1)
+catch.n <- read.csv("hke_9_10_11_catch_n.csv")
+catch.n <- read.csv("hke_9_10_11_catch_n.csv",header = TRUE, row.names = 1)
 
 # We have read in the data as a data.frame
 class(catch.n)
 # There is an FLQuant contructor that uses a data.frame, but here our data.frame is not set up the right way
 # Instead we can convert the object to a matrix
-catch.n.matrix <- as.matrix(catch.n)
+catch.n.matrix <- as.matrix(catch.n[1:7, -1])
 catch.n.matrix
 # We need to specify the dimnames
-catch.n.flq <- FLQuant(catch.n.matrix, dimnames=list(age=1:7, year = 1957:2011))
+catch.n.flq <- FLQuant(catch.n.matrix, dimnames=list(age=0:6, year = 2006:2014))
 catch.n.flq
 
 # Another option for reading in the data is to omit column and row names from the csv data
 # You would use header=FALSE (else you lose the first row of data)
 # Also leave the row.names argument empty
-catch.n <- read.csv("data/catch_numbers2.csv", header=FALSE)
-catch.n.matrix <- as.matrix(catch.n)
-catch.n.flq <- FLQuant(catch.n.matrix, dimnames=list(age=1:7, year = 1957:2011))
+catch.n <- read.csv("hke_9_10_11_catch_n.csv", header=FALSE)
+catch.n.matrix <- as.matrix(catch.n[1:7, -2])
+catch.n.flq <- FLQuant(catch.n.matrix, dimnames=list(age=0:6, year = 2006:2014))
 
 # If you get get your data into R you can get it into an FLQuant.
 # If you get your data into an FLQuant you get it into any FLR object!
+
+# What else do we need to run a stock assessment like? A tuning index, like a 
+# trawl survey relative abundance index or a commercial CPUE.
+
+# Load an FLIndex
+
+catch.n_idx <- read.csv("hke_9_10_11_idx.csv",header = TRUE, row.names = 1)
+catch.n_idx.matrix <- as.matrix(catch.n_idx[1:6, -2])
+FLIndex(catch.n = FLQuant(catch.n.matrix, dimnames=list(age=0:5, year = 2006:2014)))
