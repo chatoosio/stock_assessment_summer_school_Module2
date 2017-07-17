@@ -83,6 +83,9 @@ summary(flq)
 # or a full look at the object (useful for small objects only)
 flq
 
+# look at the structure of the FLQaunt
+str(flq)
+
 # A default plot spreads across panels all dims of length > 1
 plot(flq)
 

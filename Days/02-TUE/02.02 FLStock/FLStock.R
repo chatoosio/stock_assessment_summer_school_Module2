@@ -6,7 +6,7 @@
 # $Id: $
 
 # Class structure
-# load data from Plaice stocks in N Atlantic ICES area IV
+# load data from Mediterranean Hake in GSA 9-10-11
 
 library(FLCore)
 
@@ -22,6 +22,10 @@ class(hke)
 
 slotNames(hke)
 
+# look at the structure
+str(hke)
+
+#let's plot it'
 plot(hke)
 
 name(hke)
