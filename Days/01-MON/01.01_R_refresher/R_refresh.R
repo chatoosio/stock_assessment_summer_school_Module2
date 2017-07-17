@@ -58,7 +58,9 @@ ls()
 ov <- 1:10
 
 seq(1, 10, by=2)
-seq(1, 10, length=20)
+seq(0, 10, length=20)
+
+length(seq(1,10, by=0.5))
 
 # or by contatenating elements, using c()
 
@@ -98,7 +100,7 @@ ov[length(ov)-1]
 
 ov[ov>2]
 
-ov[ov>2 & ov<6]
+ov[ov>2 & ov<=6]
 
 # Information on a vector, like
 # length
@@ -156,6 +158,9 @@ dire[1] <- "S"
 
 dire[2] <- "P"
 
+# To drop unused levels use factor()
+
+dire <- factor(dire)
 
 # LOGICAL
 
@@ -175,6 +180,7 @@ is.logical(res)
 dat <- 1:4
 
 dat[c(TRUE, FALSE, FALSE, TRUE)]
+dat[c(TRUE, TRUE, FALSE, TRUE)]
 
 
 # SPECIAL VALUES
@@ -214,8 +220,7 @@ sum(dat, na.rm=TRUE)
 
 # Exercise 01
 
-# 1. Create a vector of length 15, elements 1-7 increasing from 1,
-# and 8-15 decreasing from 25
+# 1. Create a vector of length 15, elements 1-7 increasing from 1, and 8-15 decreasing from 25
 
 # How many ways can you find of doing it?
 
@@ -233,6 +238,8 @@ sum(dat, na.rm=TRUE)
 # A 2D structure of either numeric or character elements
 
 # Constructed using matrix()
+
+matrix(1:10, ncol=10, nrow=10)
 
 matrix(rnorm(10), ncol=10, nrow=10)
 
@@ -279,9 +286,9 @@ mat - mat
 
 # Exercise 02
 
-# 1. Create a matrix with 10 rows and 15 columns, containing random numbers 
+# 1. Create a matrix with 10 rows and 15 columns, containing random numbers from a normal distribution
 
-# 2. Subset the first 5 rows and columns of this matrix
+# 2. Subset the first 5 rows and columns of this matrix (5*5)
 
 # 3. Sum the matrix by row
 

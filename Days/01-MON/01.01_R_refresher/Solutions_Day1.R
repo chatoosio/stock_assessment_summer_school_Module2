@@ -1,7 +1,6 @@
 # Exercise 01
 
-# 1. Create a vector of length 15, elements 1-7 increasing from 1,
-# and 8-15 decreasing from 25
+# 1. Create a vector of length 15, elements 1-7 increasing from 1, and 8-15 decreasing from 25
 
 vec <- c(1:7, 25:18) 
 
@@ -31,7 +30,7 @@ mean(vec)
 
 # Exercise 02
 
-# 1. Create a matrix with 10 rows and 15 columns, containing random numbers 
+# 1. Create a matrix with 10 rows and 15 columns, containing random numbers from a normal distribution
 
 mat <- matrix(rnorm(150), ncol=15, nrow=10)
 
