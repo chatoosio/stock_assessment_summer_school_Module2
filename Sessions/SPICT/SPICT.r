@@ -252,6 +252,7 @@ plotspict.diagnostic(ane6effortfit)
 
 #######################################################################################
 # CASE STUDY COMPARISON with a age based model
+library(FLCore)
 
 data(ple4.index)
 data(ple4)
