@@ -10,6 +10,7 @@
 ane6$obsC <- ane6$obsC[c(59:72)]
 ane6$timeC <- ane6$timeC[c(59:72)]
 
+ane6$dteuler <- 1/16
 
 plotspict.data(ane6)
 
@@ -31,7 +32,7 @@ ane6fitT_retro <- retro(ane6TRUNC, nretroyear = 4)
 # now plot it!
 plotspict.retro(ane6fitT_retro)
 
-# So the model fits well, diagnostics are good, we can have a look at the final results.
+# the model fits well?, diagnostics are good? have a look at the final results.
 # Fit Summary
 summary(ane6TRUNC)
 
@@ -63,3 +64,7 @@ plotspict.diagnostic(ane6effortt_diagn)
 
 plotspict.diagnostic(ane6effortfit)
 
+ane6fitEFF_retro <- retro(ane6effortfit, nretroyear = 4)
+
+# now plot it!
+plotspict.retro(ane6fitEFF_retro)

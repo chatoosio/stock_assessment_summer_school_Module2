@@ -195,7 +195,7 @@ plot(ne6fitTA)
 
 
 ####################################################################
-# Exercize 1
+# Exercize 2
 # Production models can take also time series of effort, but many caveats should be made when using fishing effort! 
 
 # Run the model with also effort
@@ -218,7 +218,7 @@ ane6effort$timeE <- ane$year[59:71]
 
 ########################################################################################
 
-# Next exercize
+#  Exercize 3
 
 
 # Robust estimation for effort (or catch), helps reduce influence of idividual data points on model fit or CIs.
@@ -227,7 +227,8 @@ ane6effort$timeE <- ane$year[59:71]
 
 # 1) Turn on robust estimation
 ane6effort$robflage <- 1 # here we turn on robust estimation on effort
-# Rerun the assessment, does the fit improve?
+
+# 2) Rerun the assessment, does the fit improve?
 
 ane6effortfitRE <- fit.spict(ane6effort)
 
@@ -294,6 +295,9 @@ ple$obsI[[13]] <- NA
 
 ple
 
+
+
+
 # Lets have a look
 x11()
 plotspict.data(ple)
@@ -312,10 +316,74 @@ capture.output(summary(plefit))[1:4]
 
 plot(plefit)
 
+plefit_diagn <- calc.osa.resid(plefit)
 
+plotspict.diagnostic(plefit_diagn)
+
+
+plefit_retro <- retro(plefit, nretroyear = 4)
+
+# now plot it!
+plotspict.retro(plefit_retro)
+
+plot(plefit)
 ######################################################################################
+# RUN ANE 6 with two split surveys and correct timing set up
+
+ane6 <- vector("list")
+
+# Import Catch data (Landings plus Discards)
+ane6$obsC  <- ane$catch  #catch observations
+ane6$timeC <- ane$year   # time of catch observations
+ane6$obsC <- c(ane6$obsC, 17830.4) # adding an extra value to update the stock
+ane6$timeC <- c(ane6$timeC, 2016)  # adding an extra value to update the year
+
+ane6$timeI <- list(ane$year[59:63] + 0.95, (c(ane$year[64:71], 2016) + 0.54)) # 
+
+ane6$timeI <- list(ane$year[59:63] , (c(ane$year[64:71], 2016) )) # 
+
+#nep$timeI <- list(as.numeric(froglia$year), nep_pomo$year, medits_gsa17_annuario$Year, grund$year)
 
 
+ane6$obsI <- list()
+ane6$obsI[[1]] <- ane$index[59:63]
+ane6$obsI[[2]] <- c(ane$index[64:71], 67910.3)
+
+plotspict.data(ane6)
+
+ne6fitSS2 <- fit.spict(ane6)
+
+# Explore convergence
+capture.output(summary(ne6fitSS2))[1:4]
+
+#Check list:
+#  - did it converge?
+#  - how is it fitting?
+
+# Let's have a look at the Diagnostics First
+
+ne6fitSS2_diagn <- calc.osa.resid(ne6fitSS2)
+
+plotspict.diagnostic(ne6fitSS2_diagn)
+
+
+# Diagnostics, run it by taking away the last 4 years, one at a time
+ane6fitTA_retro <- retro(ne6fitTA, nretroyear = 4)
+
+plotspict.retro(ane6fitTA_retro)
+
+
+# Fit Summary
+summary(ne6fitTA)
+
+x11()
+plot(ne6fitTA)
+
+
+
+
+
+###################################################################
 # Short term
 
 # ane6$manstart <- 2016
