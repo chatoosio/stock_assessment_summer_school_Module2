@@ -125,7 +125,7 @@ FLQuant(matrix(abs(rnorm(16)), nrow=4, ncol=4),
 	dimnames=list(age=1:4, year=2000:2003), units="kg")
 
 # They can also be modified and extracted
-flq <- FLQuant(matrix(abs(rnorm(16)), nrow=4, ncol=4),
+flq <- FLQuant(matrix(abs(array(1:50, dim=c(2,5,5))), nrow=4, ncol=4),
 	dimnames=list(length=1:4, year=2000:2003), units="kg")
 
 # dimnames<-
@@ -230,7 +230,10 @@ apply(bma, 2:6, sum)
 # or get the mean abundance at age for the last 3 years
 apply(bma[,as.character(2007:2009)], c(1,3:6), mean)
 
-# sweep
+
+####################################################
+
+
 
 
 # ITERS
