@@ -19,6 +19,7 @@
 
 library(FLa4a)
 library(diagram)
+library(ggplotFL)
 
 # Load the Hake stock for the combined GSA 9-10-11
 
@@ -47,10 +48,10 @@ range(hke)["maxfbar"] <- 3
 
 
 # fitting
-fit <- sca(hke, hke.idx[1])
+fit <- sca(hke, hke.idx[3])
 
 # diagnostics
-res <- residuals(fit, hke, hke.idx)
+res <- residuals(fit, hke, hke.idx[3])
 plot(res, main="Residuals")
 bubbles(res)
 qqmath(res)
@@ -77,7 +78,7 @@ plot(fit, hke)
 # Explore how well the model is predicitng survey abundances
 
 
-plot(fit, hke.idx)
+plot(fit, hke.idx[3])
 
 # Individual indexes can be called with
 # Explore how well the model is predicitng the catches
@@ -88,6 +89,8 @@ plot(fit, hke.idx[1])
 #====================================================================
 # The sca method - statistical catch-at-age
 #====================================================================
+
+?sca
 
 # submodels
     #	fmodel

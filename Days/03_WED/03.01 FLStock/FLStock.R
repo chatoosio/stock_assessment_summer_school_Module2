@@ -11,8 +11,9 @@
 library(FLCore)
 
 #data(hke)
-load("~/GitHub/stock_assessment_summer_school_Module2/Material/stocks_for_course/HKE9_11_at_Age/HKE_09_10_11_EWG15_11.RData")
+load("HKE_09_10_11_EWG15_11.RData")
 
+# Rename the Stock object to something more handy and faster to write
 hke <- HKE_09_10_11_EWG15_11
 
 
@@ -28,11 +29,24 @@ str(hke)
 #let's plot it'
 plot(hke)
 
+
+######################
+#  INPUT DATA FLStock
+######################
+
+# Look  at the name of the stock, why is it different after we changed the object name? 
+# name(hke) != object name
 name(hke)
+
+# Description
 desc(hke)
+
+# Range of ages, years, plus group and fbar
 range(hke)
 
-# catch =~ landings + discards
+
+# Operations
+# catch =~ landings + discards, in case discards had already been included in landings, so are 0 here. Normally discards should be be reported in the discard quant
 landings(hke) + discards(hke)
 
 catch(hke)
@@ -44,32 +58,60 @@ catch(hke) <- landings(hke) + discards(hke)
 # *, *.n & *.wt
 catch.n(hke)
 
+# Compute catch for 2006 only, this is the product of number of fish @ age times the mean weight of fish @ age
 quantSums(catch.n(hke)[,"2006",,,,] * catch.wt(hke)[,"2006",,,,])
 
+# is it in line with what is reported with the hke stock?
 catch(hke)[,"2006",,,,]
 
 # m, m.spwn
 m(hke) # natural mortality
 
+# What is the mean natural mortality applied to the stock?
+mean(m(hke))
+
+# m.spwn
 m.spwn(hke) # fraction of the natural mortality ocurring before spawning
 
-# harvest, harvest.spwn
-harvest(hke)
+# equivalently you have some fishing mortality (harvest) occurring on the fish population before spawning. This is important when you have population that spawn in a narrow window of time, in particular with a short life cycle.
 harvest.spwn(hke)
 
-# stock
-stock(hke)
+
+##################################
+# ESTIMATED PARAMETERS
+##################################
+
+# harvest e.g. fishing mortality or harvest rate, normally defined as F
+harvest(hke)
+
+# Size of the estimated population at sea, in terms of total biomass, total numbers at age and total mean weight at age.
+
 stock.n(hke)
+stock.wt(hke)
 
 # in this case the size of the at sea population was not compute, so we use the method:
+stock(hke)
+
+# Se we compute it
 computeStock(hke)
 
+# and assign it to the slot stock
 stock(hke) <- computeStock(hke)
 
-# Methods
-# hke
+# Estimated Recruitment
+rec(hke)
 
-# Methods: computing discards, landings and catch
+# Estimates of Spawning Stock Biomass
+ssb(hke)
+
+
+##################################
+# METHODS for the class FLSTOCK
+################################## 
+
+# We already saw computeStock() and quantSums()
+
+# computing discards, landings and catch
 discards(hke) <- computeDiscards(hke)
 
 # summary & plot
@@ -87,9 +129,8 @@ smallhke <- window(hke, start = 2008, end = 2013)
 
 # Check new year range
 range(smallhke)
-#plot(smallhke)
 
-# SUBSET
+# SUBSET by year
 temp <- hke[,c("2008", "2009", "2010", "2011")]
 # or
 temp <- hke[,as.character(2008:2011)]
@@ -127,7 +168,8 @@ plot(landings(hke))
 #METHODS rec = stock.n[rec.age=first.age,]
 rec(hke)
 
-#METHODS Calculate Spawning Stock Biomass (SSB)
+
+# METHODS Calculate Spawning Stock Biomass (SSB)
 # SSB = stock.n * exp(-F * F.spwn - M * M.spwn) * stock.wt * mat
 
 ssb(hke)
@@ -139,11 +181,11 @@ colSums(object@stock.n * exp(-object@harvest *
 
 getMethod("ssb", "FLStock")
 
-#METHODS Fbar = mean(F between fbar ages)
+# METHODS Fbar = mean(F between fbar ages)
 fbar(hke)
 getMethod("fbar", "FLStock")
 
-#METHODS fapex = max F per year
+# METHODS fapex = max F per year
 fapex(hke)
 
 #METHODS ssbpurec = SSB per unit recruit
@@ -159,8 +201,8 @@ plot(survprob(hke))
 
 #METHODS coercion
 # as.FLSR
-ple4SR<-as.FLSR(hke)
-summary(ple4SR)
+hkeSR<-as.FLSR(hke)
+summary(hkeSR)
 
 # METHODS convert to data frame
 # entire FlStock
