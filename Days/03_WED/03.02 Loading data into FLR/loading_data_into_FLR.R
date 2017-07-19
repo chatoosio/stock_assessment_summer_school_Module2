@@ -88,11 +88,18 @@ catch.wt.flq <- FLQuant(catch.wt.matrix, dimnames=list(age=0:6, year = 2006:2014
 #hke.stk <- window(hke.stk, start= 2006, end = 2014)
 #catch.n(hke.stk) <- catch.n.flq
 
-hke.stk <- FLStock(FLQuants(catch.n = catch.n.flq, catch.wt = catch.wt.flq))
 
+hke.stk <- FLStock(catch.n = catch.n.flq, catch.wt = catch.wt.flq)
+
+units(harvest(hke.stk)) <- "f"
+
+
+class(hke.stk)
 catch(hke.stk) <- computeCatch(hke.stk)
 
 plot(catch(hke.stk))
+
+plot(hke.stk)
 
 
 # NEXT STEPS are to Load
