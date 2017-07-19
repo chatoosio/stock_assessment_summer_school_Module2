@@ -11,7 +11,7 @@
 library(FLCore)
 
 #data(hke)
-load("~/GitHub/stock_assessment_summer_school_Module2/Material/stocks_for_course/HKE9_11_at_Age/HKE_09_10_11_EWG15_11.RData")
+load("HKE_09_10_11_EWG15_11.RData")
 
 # Rename the Stock object to something more handy and faster to write
 hke <- HKE_09_10_11_EWG15_11
