@@ -91,7 +91,7 @@ plot(fit, hke)
 # Explore how well the model is predicitng survey abundances
 
 
-plot(fit, hke.idx[3])
+plot(fit, hke.idx)
 
 # Individual indexes can be called with
 # Explore how well the model is predicitng the catches
@@ -147,6 +147,8 @@ plot(res, main="Residuals")
 bubbles(res)
 qqmath(res)
 
+AIC(fit)
+BIC(fit)
 ================================================================================
 
 # smooth separable Fay = smooth Fa * smooth Fy
@@ -172,8 +174,8 @@ bubbles(res1)
 qqmath(res1)
 
 #wireframe(data ~ age + year, data = as.data.frame(harvest(fit1)), drape = TRUE, screen = list(x = -90, y=-45))
-
-
+AIC(fit1)
+BIC(fit1)
 ================================================================================
 
 # interaction Fa * Fy
@@ -197,6 +199,8 @@ bubbles(res2)
 qqmath(res2)
 
 #wireframe(data ~ age + year, data = as.data.frame(harvest(fit2)), drape = TRUE, screen = list(x = -90, y=-45))
+AIC(fit2)
+BIC(fit2)
 
 ================================================================================
 
@@ -217,10 +221,12 @@ z <- as.matrix(harvest(hke3)[,,drop = TRUE])
 x <- as.numeric(rownames(z))
 y <- as.numeric(colnames(z))
 
-plot3d(surface3d(z = z,  y = y , x= -x, type = "n")
+plot3d(surface3d(z = z,  y = y , x= x, type = "n")
 )
-surface3d(z = z,  y= y , x= -x, col = jet.colors(100))
+surface3d(z = z,  y= y , x= x, col = jet.colors(100))
 
+AIC(fit3)
+BIC(fit3)
 
 ================================================================================
 
@@ -244,12 +250,12 @@ plot3d(surface3d(z = z,  y = y , x= x, type = "n")
 surface3d(z = z,  y= y , x= x, col = jet.colors(100))
 
 
-plot(fit, hke)
-plot(fit, hke.idx)
+plot(fit4, hke)
+plot(fit4, hke.idx)
 #wireframe(data ~ age + year, data = as.data.frame(harvest(fit4)), drape = TRUE, screen = list(x = -90, y=-45))
 
-
-
+AIC(fit4)
+BIC(fit4)
 #--------------------------------------------------------------------
 # Exercise 01
 #--------------------------------------------------------------------
@@ -275,8 +281,39 @@ plot(fit, hke.idx)
 fmodel <- ~ factor(age) + factor(year)
 
 # one coefficient for each age
-qmodel <- list(~ factor(age)) 
-fit <- sca(hke, hke.idx, fmodel, qmodel)
+qmodel <- list(~ factor(age), ~ factor(age), ~ factor(age), ~ factor(age)) 
+fit5 <- sca(hke, hke.idx, fmodel, qmodel)
+
+res5 <- residuals(fit5, hke, hke.idx)
+plot(res5, main="Residuals")
+
+
+# smooth age catchability
+qmodel <- list(~ s(age, k=4),~ s(age, k=4),~ s(age, k=4),~ s(age, k=4))
+fit6 <- sca(hke, hke.idx, fmodel, qmodel)
+res6 <- residuals(fit6, hke, hke.idx)
+plot(res6, main="Residuals")
+
+
+# age-year interaction
+qmodel <- list(~ te(age, year, k = c(3,5)),~ te(age, year, k = c(3,5)),~ te(age, year, k = c(3,5)),~ te(age, year, k = c(3,5)))
+fit7 <- sca(hke, hke.idx, fmodel, qmodel)
+res7 <- residuals(fit7, hke, hke.idx)
+plot(res7, main="Residuals")
+
+
+
+# smooth age catchability + year linear effect
+qmodel <- list( ~ s(age, k=4) + year,~ s(age, k=4) + year,~ s(age, k=4) + year,~ s(age, k=4) + year)
+fit8 <- sca(hke, hke.idx, fmodel, qmodel)
+
+res8 <- residuals(fit8, hke, hke.idx)
+plot(res8, main="Residuals")
+
+
+
+
+
 
 # mambo jambo to plot index in the right period 
 Z <- (m(hke) + harvest(fit))*sfrac # check M * sfrac
@@ -313,6 +350,12 @@ lst$x <- stock.n(fit3)*exp(-Z)
 stkn <- do.call("trim", lst)
 wireframe(data ~ age + year, data = as.data.frame(index(fit3)[[1]]/stkn), drape = TRUE, screen = list(x = -90, y=-45))
 
+
+
+
+
+
+
 #--------------------------------------------------------------------
 # stock-recruitment submodel
 #--------------------------------------------------------------------
@@ -348,10 +391,12 @@ xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment models", 
 #====================================================================
 
 fmodel <- ~ s(age, k=4) + s(year, k = 5)
-qmodel <- list( ~ s(age, k=4) + year)
+qmodel <- list( ~ s(age, k=4) + year,~ s(age, k=4) + year,~ s(age, k=4) + year,~ s(age, k=4) + year)
 srmodel <- ~s(year, k=8)
-fit <- a4aSCA(hke, hke.idx[1], fmodel, qmodel, srmodel) 
+fit <- a4aSCA(hke, hke.idx, fmodel, qmodel) 
+hkea4a <- hke + fit
 
+plot(hkea4a)
 #--------------------------------------------------------------------
 # Exercise 03 
 #--------------------------------------------------------------------
@@ -476,10 +521,10 @@ wireframe(data ~ age + year, data = as.data.frame(harvest(fit)), drape = TRUE, s
 # is computed
 #====================================================================
 
-fmodel <- ~ s(age, k=4) + s(year, k = 20)
-qmodel <- list( ~ s(age, k=4) + year)
-srmodel <- ~s(year, k=20)
-fit <- a4aSCA(hke, hke.idx[1], fmodel, qmodel, srmodel) 
+fmodel <- ~ s(age, k=4) + s(year, k = 5)
+qmodel <- list( ~ s(age, k=4) + year,~ s(age, k=4) + year,~ s(age, k=4) + year,~ s(age, k=4) + year)
+srmodel <- ~s(year, k=5)
+fit <- a4aSCA(hke, hke.idx, fmodel, qmodel, srmodel) 
 
 #--------------------------------------------------------------------
 # Predict
@@ -492,7 +537,7 @@ lapply(fit.pred, names)
 # Simulate
 #--------------------------------------------------------------------
 
-fits <- simulate(fit, 1000)
+fits <- simulate(fit4, 1000)
 flqs <- FLQuants(sim=iterMedians(stock.n(fits)), det=stock.n(fit))
 
 xyplot(data~year|age, groups=qname, data=flqs, type="l", main="Median simulations VS fit", scales=list(y=list(relation="free")), auto.key=keylst)
