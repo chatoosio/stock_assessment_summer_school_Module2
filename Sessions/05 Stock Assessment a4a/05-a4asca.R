@@ -16,7 +16,9 @@
 #====================================================================
 # Load
 #====================================================================
+install.packages("rgl")
 
+library(rgl)
 library(FLa4a)
 library(diagram)
 library(ggplotFL)
@@ -45,9 +47,9 @@ range(hke)["minfbar"] <- 0
 range(hke)["maxfbar"] <- 3
 
 
+# To fit a simple default a4a model, use the function sca()
+# to explore a simple diagnostics, we run it only with the tuning index MEDITS 09
 
-
-# fitting
 fit <- sca(hke, hke.idx[3])
 
 # diagnostics
@@ -61,18 +63,29 @@ stk <- hke + fit
 plot(stk, main="Stock summary")
 
 # F 3D
-wireframe(data ~ age + year, data = as.data.frame(harvest(stk)), drape = TRUE, main="Fishing mortality", screen = list(x = -90, y=-45))
+#wireframe(data ~ age + year, data = as.data.frame(harvest(stk)), drape = TRUE, main="Fishing mortality", screen = list(x = -60, y=45))
+
+jet.colors <-
+  colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+                     "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
+z <- as.matrix(harvest(stk)[,,drop = TRUE])
+x <- as.numeric(rownames(z))
+y <- as.numeric(colnames(z))
+
+plot3d(surface3d(z = z,  y = y , x= x, type = "n")
+)
+surface3d(z = z,  y= y , x= x, col = jet.colors(100))
+
 
 # N 3D
-wireframe(data ~ age + year, data = as.data.frame(stock.n(stk)), drape = TRUE, main="Population", screen = list(x = -90, y=-45))
+wireframe(data ~ age + year, data = as.data.frame(stock.n(stk)), drape = TRUE, main="Population", screen = list(x = -60, y= - 45))
 
 # C 3D
-wireframe(data ~ age + year, data = as.data.frame(catch.n(stk)), drape = TRUE, main="Catches")
+wireframe(data ~ age + year, data = as.data.frame(catch.n(stk)), drape = TRUE, main="Catches", screen = list(x = -60, y= - 45))
 
 
 
 # Explore how well the model is predicitng the catches
-
 plot(fit, hke)
 
 # Explore how well the model is predicitng survey abundances
@@ -85,6 +98,13 @@ plot(fit, hke.idx[3])
 
 plot(fit, hke.idx[1])
 
+#####
+#To get information about the likelihood t the method fitSumm() will extract information about likelihood, number of parameters, etc, and the methods AIC() and BIC() will compute the information criteria.
+#Get the fit parameters
+
+fitSumm(fit)
+AIC(fit)
+BIC(fit)
 
 #====================================================================
 # The sca method - statistical catch-at-age
@@ -111,27 +131,124 @@ qmodel <- list(~ factor(age), ~ factor(age), ~ factor(age), ~ factor(age))
 fmodel <- ~ factor(age) + factor(year)
 fit <- sca(stock = hke, indices = hke.idx, fmodel=fmodel, qmodel=qmodel)
 
-wireframe(data ~ age + year, data = as.data.frame(harvest(fit)), drape = TRUE, screen = list(x = -90, y=-45))
+hke.sep <- stk + fit
+
+z <- as.matrix(harvest(hke.sep)[,,drop = TRUE])
+x <- as.numeric(rownames(z))
+y <- as.numeric(colnames(z))
+
+plot3d(surface3d(z = z,  y = y , x= x, type = "n")
+)
+surface3d(z = z,  y= y , x= x, col = jet.colors(100))
+
+# diagnostics
+res <- residuals(fit, hke, hke.idx)
+plot(res, main="Residuals")
+bubbles(res)
+qqmath(res)
+
+================================================================================
 
 # smooth separable Fay = smooth Fa * smooth Fy
 fmodel <- ~ s(age, k=4) + s(year, k = 5)
+
 fit1 <- sca(hke, hke.idx, fmodel, qmodel)
-wireframe(data ~ age + year, data = as.data.frame(harvest(fit1)), drape = TRUE, screen = list(x = -90, y=-45))
+
+hke1 <- stk + fit1
+
+z <- as.matrix(harvest(hke1)[,,drop = TRUE])
+x <- as.numeric(rownames(z))
+y <- as.numeric(colnames(z))
+
+plot3d(surface3d(z = z,  y = y , x= x, type = "n")
+)
+surface3d(z = z,  y= y , x= x, col = jet.colors(100))
+
+
+# diagnostics
+res1 <- residuals(fit1, hke, hke.idx)
+plot(res1, main="Residuals")
+bubbles(res1)
+qqmath(res1)
+
+#wireframe(data ~ age + year, data = as.data.frame(harvest(fit1)), drape = TRUE, screen = list(x = -90, y=-45))
+
+
+================================================================================
 
 # interaction Fa * Fy
-fmodel <- ~ te(age, year, k = c(3,5))
-fit2 <- sca(hke, hke.idx[1], fmodel, qmodel)
-wireframe(data ~ age + year, data = as.data.frame(harvest(fit2)), drape = TRUE, screen = list(x = -90, y=-45))
+fmodel <- ~ te(age, year, k = c(4,5))
+fit2 <- sca(hke, hke.idx, fmodel, qmodel)
+
+hke2 <- stk + fit2
+
+z <- as.matrix(harvest(hke2)[,,drop = TRUE])
+x <- as.numeric(rownames(z))
+y <- as.numeric(colnames(z))
+
+plot3d(surface3d(z = z,  y = y , x= x, type = "n")
+)
+surface3d(z = z,  y= y , x= x, col = jet.colors(100))
+
+# diagnostics
+res2 <- residuals(fit2, hke, hke.idx)
+plot(res2, main="Residuals")
+bubbles(res2)
+qqmath(res2)
+
+#wireframe(data ~ age + year, data = as.data.frame(harvest(fit2)), drape = TRUE, screen = list(x = -90, y=-45))
+
+================================================================================
 
 # smooth separable + interaction Fa,Fy
 fmodel <- ~ s(age, k=4) + s(year, k = 5) + te(age, year, k = c(3,3))
 fit3 <- sca(hke, hke.idx, fmodel, qmodel)
-wireframe(data ~ age + year, data = as.data.frame(harvest(fit3)), drape = TRUE, screen = list(x = -90, y=-45))
+hke3 <- stk + fit3
+
+# diagnostics
+res3 <- residuals(fit3, hke, hke.idx)
+plot(res3, main="Residuals")
+bubbles(res3)
+qqmath(res3)
+
+
+
+z <- as.matrix(harvest(hke3)[,,drop = TRUE])
+x <- as.numeric(rownames(z))
+y <- as.numeric(colnames(z))
+
+plot3d(surface3d(z = z,  y = y , x= -x, type = "n")
+)
+surface3d(z = z,  y= y , x= -x, col = jet.colors(100))
+
+
+================================================================================
 
 # interaction Fa * Fy + recruitment F extra smooth
 fmodel <- ~ te(age, year, k = c(4,5)) + s(year, k = 5, by = as.numeric(age==1))
 fit4 <- sca(hke, hke.idx, fmodel, qmodel)
-wireframe(data ~ age + year, data = as.data.frame(harvest(fit4)), drape = TRUE, screen = list(x = -90, y=-45))
+hke4 <- stk + fit4
+
+# diagnostics
+res4 <- residuals(fit4, hke, hke.idx)
+plot(res4, main="Residuals")
+bubbles(res4)
+qqmath(res4)
+
+z <- as.matrix(harvest(hke4)[,,drop = TRUE])
+x <- as.numeric(rownames(z))
+y <- as.numeric(colnames(z))
+
+plot3d(surface3d(z = z,  y = y , x= x, type = "n")
+)
+surface3d(z = z,  y= y , x= x, col = jet.colors(100))
+
+
+plot(fit, hke)
+plot(fit, hke.idx)
+#wireframe(data ~ age + year, data = as.data.frame(harvest(fit4)), drape = TRUE, screen = list(x = -90, y=-45))
+
+
 
 #--------------------------------------------------------------------
 # Exercise 01
@@ -143,18 +260,23 @@ wireframe(data ~ age + year, data = as.data.frame(harvest(fit4)), drape = TRUE, 
 # fit different smoothers and different degrees of freedom (see ?s)
 
 #--------------------------------------------------------------------
+##############################
 # catchability submodel
+##############################
 #--------------------------------------------------------------------
 
+#The catchability submodel is set up the same way as the F submodel and the tools available are the same. The only dierence is that the submodel is set up as a list of formulas, where each formula relates with one abundance index.
+#We'll start by xing the F and R models and compute the fraction of the year the index relates to, which will allow us to compute catchability at age and year.
+
 # year fraction before the survey
-sfrac <- mean(range(hke.idx[[1]])[c("startf", "endf")])
+#sfrac <- mean(range(hke.idx[[1]])[c("startf", "endf")])
 
 # fix fmodel
 fmodel <- ~ factor(age) + factor(year)
 
 # one coefficient for each age
 qmodel <- list(~ factor(age)) 
-fit <- sca(hke, hke.idx[1], fmodel, qmodel)
+fit <- sca(hke, hke.idx, fmodel, qmodel)
 
 # mambo jambo to plot index in the right period 
 Z <- (m(hke) + harvest(fit))*sfrac # check M * sfrac
