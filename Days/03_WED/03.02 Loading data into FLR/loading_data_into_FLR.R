@@ -42,27 +42,27 @@ getwd()
 # Note that we have row and column names (ages and years)
 
 # Read this in using read.table() with default options
-catch.n <- read.table("catch_numbers.csv")
+catch.n <- read.table("hke_9_10_11_catch_n.csv")
 catch.n
 # Looks terrible
 # what just happened?
 # The separator in our file is a comma , so we need to specify that
-catch.n <- read.table("catch_numbers.csv", sep=',')
+catch.n <- read.table("hke_9_10_11_catch_n.csv", sep=',')
 
 # Better but the column and row names have been included as data
 # We can try to fix this using the header and row.names options
-catch.n <- read.table("catch_numbers.csv", header=TRUE, sep=',')
+catch.n <- read.table("hke_9_10_11_catch_n.csv", header=TRUE, sep=',')
 
-# Specify which column has the row names 
-catch.n <- read.table("catch_numbers.csv", header=TRUE, sep=',', row.names=1)
 
 # The column names are ugly (with the Xs) but that is OK for now
+
 # Can use read.csv() instead - same as read.table() but different default options
 catch.n <- read.csv("hke_9_10_11_catch_n.csv")
-catch.n <- read.csv("hke_9_10_11_catch_n.csv",header = TRUE, row.names = 1)
+catch.n <- read.csv("hke_9_10_11_catch_n.csv",header = TRUE)
 
 # We have read in the data as a data.frame
 class(catch.n)
+
 # There is an FLQuant contructor that uses a data.frame, but here our data.frame is not set up the right way
 # Instead we can convert the object to a matrix
 catch.n.matrix <- as.matrix(catch.n[1:7, -1])
@@ -75,8 +75,32 @@ catch.n.flq
 # You would use header=FALSE (else you lose the first row of data)
 # Also leave the row.names argument empty
 catch.n <- read.csv("hke_9_10_11_catch_n.csv", header=FALSE)
-catch.n.matrix <- as.matrix(catch.n[1:7, -2])
+catch.n.matrix <- as.matrix(catch.n[2:8, -1])
 catch.n.flq <- FLQuant(catch.n.matrix, dimnames=list(age=0:6, year = 2006:2014))
+
+# Read Mean weight at age (catch.wt)
+catch.wt <- read.csv("hke_9_10_11_catch_wt.csv", header=FALSE)
+catch.wt.matrix <- as.matrix(catch.wt[2:8, -1])
+catch.wt.flq <- FLQuant(catch.wt.matrix, dimnames=list(age=0:6, year = 2006:2014))
+
+# So we have two FLquants, one for catch.n and one for catch.wt, we want to combine them in an FLStock. 
+#hke.stk <- FLStock()
+#hke.stk <- window(hke.stk, start= 2006, end = 2014)
+#catch.n(hke.stk) <- catch.n.flq
+
+hke.stk <- FLStock(FLQuants(catch.n = catch.n.flq, catch.wt = catch.wt.flq))
+
+catch(hke.stk) <- computeCatch(hke.stk)
+
+plot(catch(hke.stk))
+
+
+# NEXT STEPS are to Load
+#   m
+#   mat
+#   discards.n discards.wt
+#   landings.n  landings.wt
+
 
 # If you get get your data into R you can get it into an FLQuant.
 # If you get your data into an FLQuant you get it into any FLR object!
@@ -86,16 +110,18 @@ catch.n.flq <- FLQuant(catch.n.matrix, dimnames=list(age=0:6, year = 2006:2014))
 
 # Load an FLIndex
 # take the Tuning index from MEDITS
-catch.n_idx <- read.csv("hke_9_10_11_idx.csv",header = TRUE, row.names = 1)
-catch.n_idx.matrix <- as.matrix(catch.n_idx[1:6, -2])
+catch.n_idx <- read.csv("hke_9_10_11_idx.csv", header = TRUE, row.names = 1)
+catch.n_idx.matrix <- as.matrix(catch.n_idx[1:6, ])
 
-hke.idx <- FLQuant(catch.n_idx.matrix, dimnames=list(age=1:6, year = 2006:2014))
+hke.idx <- FLQuant(catch.n_idx.matrix, dimnames=list(age=0:5, year = 2006:2014))
 hke.idx <- FLIndex(catch.n = hke.idx)
 hke.idx <- FLIndices(hke.idx)
 
 # plot the only filled slot, catch.n
 plot(catch.n(hke.idx[[1]]))
 
+# last thing, Set the timing of the survey!
+hke.idx[[1]]@range[c('startf', 'endf')] <- c(0.66,0.75)
 
 
 #---------------------------------------------------------------
