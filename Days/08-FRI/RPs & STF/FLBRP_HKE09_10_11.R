@@ -13,6 +13,7 @@ library(FLBRP)
 # we are going to use one of the stock objects from the HKE_09_10_11 stock assessment
 load("HKE9_10_11.xsa.Rdata")
 
+# let's rename it:
 hke<-HKE.stk
 
 # Create the corresponding FLBRP object 
@@ -45,7 +46,7 @@ xyplot(data~age|qname, data=FLQuants(swt=stock.wt(hkebrp), cwt =catch.wt(hkebrp)
 
 
 # we have not provided a SR relationship yet
-# so analyses wll be per-recruit 
+# so analyses will be per-recruit 
 
 
 # All *.obs slots hold the observations from FLStock 
@@ -70,7 +71,7 @@ plot(refpts(hkebrp))
 refpts(hkebrp)[c('msy', ('fmax')), ] 
 
 
-# Thus plotting the reference points ans expected quantities 
+# Thus plotting the reference points and expected quantities 
 plot(hkebrp) 
 
 
