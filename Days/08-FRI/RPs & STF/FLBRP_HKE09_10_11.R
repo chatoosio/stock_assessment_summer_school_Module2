@@ -5,15 +5,15 @@
 #' ---
 
 
-
 # load the library
 library(FLBRP) 
 
 
-# Load the example FLStock object from FLCore 
+# Load the stock object 
 # we are going to use one of the stock objects from the HKE_09_10_11 stock assessment
-load("HKEFbar0_3.RData")
-hke<-HKE.new_xsa
+load("HKE9_10_11.xsa.Rdata")
+
+hke<-HKE.stk
 
 # Create the corresponding FLBRP object 
 hkebrp <- FLBRP(hke) 
@@ -40,15 +40,8 @@ m(hkebrp)
 mat(hkebrp) 
 
 
-# selectivity 
-xyplot(data~age,data=catch.sel(hkebrp),type=c('l', 'p')) 
-
-
 # and other quantities by age 
-xyplot(data~age|qname, data=FLQuants(sel=catch.sel(hkebrp), 
-                                     swt=stock.wt(hkebrp), 
-                                     cwt =catch.wt(hkebrp), mat= mat(hkebrp), m = m(hkebrp)), 
-       type="l",scale="free") 
+xyplot(data~age|qname, data=FLQuants(swt=stock.wt(hkebrp), cwt =catch.wt(hkebrp), mat= mat(hkebrp), m = m(hkebrp)), type="l",scale="free") 
 
 
 # we have not provided a SR relationship yet
@@ -63,25 +56,6 @@ fbar.obs(hkebrp)
 
 # we estimate equilibrium quantities 
 hkebrp <- brp(hkebrp) 
-
-# and a set of equilibirum quantities for a range of F values 
-
-# fishing mortality  
-fbar(hkebrp) 
-harvest(hkebrp) 
-
-# abundance-at-age 
-stock.n(hkebrp) 
-
-# catch-at-age 
-catch.n(hkebrp) 
-
-# plus some age-aggregated values 
-yield.hat(hkebrp) 
-
-
-# mean recruitment 
-rec.hat(hkebrp) 
 
 
 # and we get a table of reference points 
@@ -121,6 +95,9 @@ srr <- fmle(as.FLSR(hke, model = model))
 hkebrpgm <- brp(FLBRP(hke, sr = srr))
 ref_points<- refpts(hkebrpgm)
 ref_points
+# Also in this case, Fmsy is the same as Fmax, since the assumed stock recruitment 
+# relationship is the geometric mean of recruitment 
+
 
 plot(refpts(hkebrpgm)) 
 
@@ -136,13 +113,12 @@ write.table(rp_table,file="Ref_points_HKE.csv",sep=";",row.names=FALSE, col.name
 
 ################################################
 
-# we can add a SR fitted model 
+# Let's add a SR relationship (Beverton and Holt)
 
 hkesr <- as.FLSR(hke, model=bevholt) 
 hkesr <- fmle(hkesr) 
 
 plot(hkesr) 
-
 
 # and provide it when constructing FLBRP 
 hkebrp <- FLBRP(hke, sr=hkesr) 
@@ -163,6 +139,18 @@ refpts(hkebrp)
 
 # and relationships 
 plot(hkebrp) 
+
+
+# EXERCIZE 01
+# Make a sensitivity analysis on a range of M to see how it affects the estimation of the main reference point(F0.1).
+hkebrpa <- hkebrp
+m(hkebrpa)<-c(1.38,	0.56,	0.27,	0.22,	0.19,	0.18,	0.17) # borrowed from GSA16
+
+hkebrpb <- hkebrp
+m(hkebrpb)<-c(1.03,	0.51,	0.33,	0.26,	0.22,	0.2, 0.2) # borrowed from GSA7
+
+
+
 
 
 

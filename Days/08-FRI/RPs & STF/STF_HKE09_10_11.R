@@ -4,14 +4,6 @@
 #' date: "July 13th, 2017"
 #' ---
 
-
-
-# STF
-# Here we run the STF for 3 years, 2015, 2016, 2017
-# You can change these as appropriate
-# The first year of the STF should be the next one after the final year in your stock data
-# For example, the final year in the HKE09_10_11 stk object is 2014 so the first year of the STF is 2015
-
 # Load the libraries
 library(FLCore)
 library(FLAssess)
@@ -22,19 +14,25 @@ library(FLXSA)
 require(plyr)
 require(FLBRP)
 
+# STF
+# Here we run the STF for 3 years, 2015, 2016, 2017
+# You can change these as appropriate
+# The first year of the STF should be the next one after the final year in your stock data
+# For example, the final year in the HKE09_10_11 stk object is 2014 so the first year of the STF is 2015
+
 # load the stock object
-load("HKEFbar0_3.RData")
-hke<-HKE.new_xsa
+load("HKE9_10_11.xsa.RData")
+hke<-HKE.stk
 
 stf_years <- c(2015,2016,2017)
 no_stf_years <- length(stf_years)
 
 # For the STF we would like to run a F0.1 scenario
-# Use FLBRP to get F0.1       #SET RP ACCORDING TO THE LAST RUN
+# Use FLBRP to get F0.1       #SET RP ACCORDING TO THE LAST ASSESSMENT RUN
 stk_brp <- brp(FLBRP(hke))
 refpts(stk_brp)
 f01 <- c(refpts(stk_brp)["f0.1","harvest"])
-# f01=0.216 # please verify that f0.1 is similar to that estimated by the assessment
+# f01=0.195 # please verify that f0.1 is similar to that estimated by the assessment
 
 
 # We also need F status quo - the geometric mean of the last X years
@@ -43,6 +41,7 @@ no_stk_years <- dim(rec(hke))[2]
 no_fbar_years <- 3 # Or set your own as appropriate
 fbars <- fbar(hke)[,(no_stk_years - no_fbar_years + 1):no_stk_years]
 fbar_status_quo <- exp(mean(log(c(fbars))))
+fbar_status_quo
 ssb(hke)
 catch(hke)
 
@@ -61,15 +60,6 @@ no_rec_years <- 3 # Change number of years as appropriate
 recs <- rec(hke)[,(no_stk_years - no_rec_years + 1):no_stk_years]
 mean_rec <- exp(mean(log(c(recs))))
 
-# We are going to run several F scenarios for the STF
-# The scenarios are based on 'F status quo', which we calculated above as the mean F of the last X years
-# An STF is for three years - you could change this but if you do you will have to hack the code below
-# For a three year STF the F pattern is:
-# year 1: fbar_status_quo
-# year 2: fbar_status_quo * fbar_multiplier
-# year 3: fbar_status_quo * fbar_multiplier
-# The fbar_multiplier is the same for years 2 and 3
-
 # We are going to run several STFs with different values for the fbar_multiplier
 # The fbar_multiplier ranges from 0.1 to 2 by 0.1
 fbar_multiplier <- seq(from = 0, to = 2, by = 0.1)
@@ -86,7 +76,7 @@ fbar_scenarios <- rbind(fbar_scenarios, c(fbar_status_quo,f01,f01))
 
 # There are various results we want to extract from the STF
 # Make an empty matrix in which to store the results
-stf_results <- matrix(NA,nrow = nrow(fbar_scenarios),ncol = 10)
+stf_results <- matrix(NA,nrow = nrow(fbar_scenarios),ncol = 10) # change ncol if needed
 # Change the column names to reflect years
 colnames(stf_results) <- c('Ffactor','Fbar','Catch_2014','Catch_2015','Catch_2016','Catch_2017','SSB_2016','SSB_2017','Change_SSB_2016-2017(%)','Change_Catch_2014-2016(%)')
 
