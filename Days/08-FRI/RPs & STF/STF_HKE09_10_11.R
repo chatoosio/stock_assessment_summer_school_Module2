@@ -4,12 +4,17 @@
 #' date: "July 13th, 2017"
 #' ---
 
+
+#let's clear the space
+# rm(list=ls())
+
+
 # Load the libraries
 library(FLCore)
 library(FLAssess)
 library(FLash)
 library(ggplotFL)
-library(FLEDA)
+# library(FLEDA)
 library(FLXSA)
 require(plyr)
 require(FLBRP)
@@ -117,7 +122,7 @@ for (scenario in 1:nrow(fbar_scenarios)) {
 # Look at the table of results
 stf_results
 # export this if necessary
-write.csv(stf_results, file="stf_results.csv")
+write.csv(stf_results, file="stf_results2015_2017.csv")
 
 # Plotting
 # Plotting is not necessary for the report but here is a crude one anyway
