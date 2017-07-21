@@ -17,8 +17,6 @@
 # Load
 #====================================================================
 install.packages("rgl")
-install.packages("diagram")
-
 
 library(rgl)
 library(FLa4a)
@@ -104,7 +102,6 @@ plot(fit, hke.idx[4])
 #Get the fit parameters
 
 fitSumm(fit)
-
 AIC(fit) # Akike Information Criterion, the smaller the better, but be careful that the model is fitting something sensible!
 BIC(fit) # Bayesian Information Criterion
 
@@ -137,11 +134,7 @@ qmodel <- list(~ factor(age), # q of MEDITS 10
 
 # separable Fay = Fa * Fy
 fmodel <- ~ factor(age) + factor(year)
-
 fit <- sca(stock = hke, indices = hke.idx, fmodel=fmodel, qmodel=qmodel)
-
-#fit <- sca(hke, hke.idx, fmodel, qmodel)
-
 
 hke.sep <- stk + fit
 
@@ -166,7 +159,7 @@ BIC(fit)
   
   
 # smooth separable Fay = smooth Fa * smooth Fy
-fmodel <- ~ s(age, k = 4) + s(year, k = 5)
+fmodel <- ~ s(age, k=4) + s(year, k = 5)
 
 fit1 <- sca(hke, hke.idx, fmodel, qmodel)
 
@@ -218,7 +211,6 @@ BIC(fit2)
 
 # smooth separable + interaction Fa,Fy
 fmodel <- ~ s(age, k=4) + s(year, k = 5) + te(age, year, k = c(3,3))
-
 fit3 <- sca(hke, hke.idx, fmodel, qmodel)
 hke3 <- stk + fit3
 
@@ -242,8 +234,7 @@ BIC(fit3)
 ================================================================================
 
 # interaction Fa * Fy + recruitment F extra smooth
-fmodel <- ~ te(age, year, k = c(4,5)) + s(year, k = 6, by = as.numeric(age==0))
-
+fmodel <- ~ te(age, year, k = c(4,5)) + s(year, k = 5, by = as.numeric(age==1))
 fit4 <- sca(hke, hke.idx, fmodel, qmodel)
 hke4 <- stk + fit4
 
@@ -263,7 +254,7 @@ surface3d(z = z,  y= y , x= x, col = jet.colors(100))
 
 
 plot(fit4, hke)
-plot(fit4, hke.idx[1])
+plot(fit4, hke.idx)
 
 AIC(fit4)
 BIC(fit4)
@@ -280,45 +271,18 @@ BIC(fit, fit1, fit2, fit3, fit4)
 #--------------------------------------------------------------------
 # Exercise 01
 #--------------------------------------------------------------------
-# 1.1) fit a linear F model with a quadratic term at age, using in the fmodel a command like fmodel <- ~ age + I(age^2) + factor(year)
+# 1.1) fit a linear F model with a quadratic term at age, using in the fmodel a command like fmodel <- ~ factor(age)^2 + factor(year)
 
 #  - is it improving the fit? What do the diagnostic support?
 
 # 1.2) fit other linear models that use transformations of age or year
-
-
+# _ for example use interactions the way used in linear models in R, e.g. age : year
 
 # 1.3) fit different smoothers and different degrees of freedom (see ?s)
 
 # - does it crash when you have higher K that your data can support?
 # - did fit a better model, what are the AIC and BIC of you models
 
-
-# Solution 1
-fmodel <- ~ age + I(age^2) + factor(year)
-fitQ <- sca(hke, hke.idx, fmodel, qmodel)
-hkeQ <- stk + fitQ
-
-# diagnostics
-resQ <- residuals(fitQ, hke, hke.idx)
-plot(resQ, main="Residuals")
-bubbles(resQ)
-qqmath(resQ)
-
-z <- as.matrix(harvest(hkeQ)[,,drop = TRUE])
-x <- as.numeric(rownames(z))
-y <- as.numeric(colnames(z))
-
-plot3d(surface3d(z = z,  y = y , x= x, type = "n")
-)
-surface3d(z = z,  y= y , x= x, col = jet.colors(100))
-
-
-plot(fit4, hke)
-plot(fit4, hke.idx[1])
-
-AIC(fit4)
-BIC(fit4)
 
 
 #--------------------------------------------------------------------
@@ -336,7 +300,6 @@ fmodel <- ~ factor(age) + factor(year)
 
 # The Q model allows now one catchability coefficient for each age
 qmodel <- list(~ factor(age), ~ factor(age), ~ factor(age), ~ factor(age)) 
-
 fit5 <- sca(hke, hke.idx, fmodel, qmodel)
 hke5 <- stk + fit5
 
@@ -455,115 +418,11 @@ BIC(fit, fit1, fit2, fit3, fit4, fit5, fit6, fit7, fit8)
 
 # 1) Fit an a4a sca to hake by trying the best combination of fmodel and qmodel
 
-fmodel <- ~ te(age, year, k = c(4,5)) + s(year, k = 5, by = as.numeric(age==0))
-qmodel <- list(~ factor(age), ~ factor(age), ~ factor(age), ~ factor(age)) 
-
-fit9 <- sca(hke, hke.idx, fmodel, qmodel, fit = "assessment")
-hke9 <- stk + fit9
-
-res9 <- residuals(fit9, hke, hke.idx)
-plot(res9, main="Residuals")
-
-bubbles(res5)
-qqmath(res5)
-
-z <- as.matrix(harvest(hke5)[,,drop = TRUE])
-x <- as.numeric(rownames(z))
-y <- as.numeric(colnames(z))
-
-plot3d(surface3d(z = z,  y = y , x= x, type = "n")
-)
-surface3d(z = z,  y= y , x= x, col = jet.colors(100))
-
-
-plot(fit5, hke)
-plot(fit5, hke.idx)
-
-
 # 2) You want to make sure that your assessment converged, in the call to sca() make sure you now change the fitting method to fit = "assessment" 
 
 # - you might need to adjust the k in the smoothers
 # - use all the diagnostics to come to a valid conclusion on your model fit
 # - tell us what is the best model!
-
-# If you are not happy with the results, what would you do to improve the assessment?
-
-    # 1) Try to change the plusgroup from 6+ to 5+ as it look like the internal consistency of the coohrts is bad with age 5 and 6.
-
-hke <- setPlusGroup(hke, 5)
-hke.idx[[1]] <- FLIndex(index=setPlusGroup(index(hke.idx[[1]]), 5))
-
-hke.idx[[1]] <- FLIndex(index=setPlusGroup(index(hke.idx[[1]]), 5))
-hke.idx[[1]] <- FLIndex(index=setPlusGroup(index(hke.idx[[1]]), 5))
-
-range(flq.idx[[1]], c('startf', 'endf')) <- c( 0.5, 0.75)
-range(flq.idx[[2]], c('startf', 'endf')) <- c( 0.5, 0.75)
-range(flq.idx[[3]], c('startf', 'endf')) <- c( 0.5, 0.75)
-
-is(hke.idx)
-
-# interaction Fa * Fy + recruitment F extra smooth
-fmodel <- ~ te(age, year, k = c(4,5)) + s(year, k = 5, by = as.numeric(age==0))
-qmodel <- list( ~ factor(age), ~ factor(age), ~ factor(age)) 
-
-fitplus5 <- sca(hke, hke.idx, fmodel, qmodel)
-hkeTRIM <- stk + fitTRIM
-
-# diagnostics
-resT <- residuals(fitTRIM, hke, hke.idxTRIM)
-plot(resT, main="Residuals")
-bubbles(resT)
-qqmath(resT)
-
-z <- as.matrix(harvest(hkeTRIM)[,,drop = TRUE])
-x <- as.numeric(rownames(z))
-y <- as.numeric(colnames(z))
-
-plot3d(surface3d(z = z,  y = y , x= x, type = "n")
-)
-surface3d(z = z,  y= y , x= x, col = jet.colors(100))
-
-
-plot(fitTRIM, hke)
-plot(fit4, hke.idxTRIM)
-
-
-
-
-    # 2) Try to remove the worst fitting tuning index
-    # Trim the FLIndices of hke.idx to remove the MEDITS GSA 11 as it is the more problematic survey index.
-
-hke.idxTRIM <- hke.idx[1:3]
-
-# interaction Fa * Fy + recruitment F extra smooth
-fmodel <- ~ te(age, year, k = c(4,5)) + s(year, k = 5, by = as.numeric(age==0))
-qmodel <- list( ~ factor(age), ~ factor(age), ~ factor(age)) 
-
-fitTRIM <- sca(hke, hke.idxTRIM, fmodel, qmodel)
-hkeTRIM <- stk + fitTRIM
-
-# diagnostics
-resT <- residuals(fitTRIM, hke, hke.idxTRIM)
-plot(resT, main="Residuals")
-bubbles(resT)
-qqmath(resT)
-
-z <- as.matrix(harvest(hkeTRIM)[,,drop = TRUE])
-x <- as.numeric(rownames(z))
-y <- as.numeric(colnames(z))
-
-plot3d(surface3d(z = z,  y = y , x= x, type = "n")
-)
-surface3d(z = z,  y= y , x= x, col = jet.colors(100))
-
-
-plot(fitTRIM, hke)
-plot(fit4, hke.idxTRIM)
-
-AIC(fit4)
-BIC(fit4)
-
-plot(fitTRIM)
 
 #====================================================================
 # Predict and simulate
@@ -577,7 +436,7 @@ fmodel <- ~ te(age, year, k = c(3,5)) + s(year, k = 5, by = as.numeric(age==1))
 qmodel <- list( ~ s(age, k=3) + year, ~ s(age, k=3) + year, ~ s(age, k=3) + year, ~ s(age, k=3) + year)
 
 #srmodel <- ~s(year, k=5)
-#fit.sim1 <- sca(hke, hke.idx, fmodel, qmodel)#, srmodel) 
+fit.sim1 <- sca(hke, hke.idx, fmodel, qmodel)#, srmodel) 
 fit.sim <- a4aSCA(hke, hke.idx, fmodel, qmodel)#, srmodel) 
 
 
@@ -597,7 +456,6 @@ plot(stks)
 # EXERCIZE 03
 
 # Compare your best model fit with the best fit from the XSA of Day 3
-
 
 
 #--------------------------------------------------------------------
